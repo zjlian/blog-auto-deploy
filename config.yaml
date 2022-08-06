@@ -1,1 +1,20 @@
-hello: "hello world"
+# 启动消息
+helloMessage: "hello world"
+
+# 服务端口
+port: 3366
+
+# hexo 源码仓库的 ssh 链接
+hexoRepositoryUrl: "test"
+
+# 博客源码仓库的 ssh 链接
+blogRepositoryUrl: "test"
+
+# 静态页面源码仓库的 ssh 链接
+pageRepositoryUrl: "test"
+
+# webhook 的口令
+webhookSecret: "test"
+
+# 处理发布的时间间隔，单位毫秒
+deployInterval: 10000
