@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "zjlian",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "tsc": "tsc",
     "dev": "tsc && node dist/index.js"

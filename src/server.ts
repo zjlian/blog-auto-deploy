@@ -3,7 +3,7 @@ import koa from "koa"
 import fs from "fs";
 import { strict as assert } from "node:assert";
 
-export class Server {
+export default class Server {
     /// 配置文件路径名称
     private configFilename: string;
     /// 服务端口
