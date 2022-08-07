@@ -34,10 +34,11 @@ export default class Server {
     // 是否有未处理的新提交
     private pending: boolean = false;
 
+
     constructor(configFilename: string) {
         assert(configFilename.length > 0, "路径无效");
-        this.config =
-            yaml.load(fs.readFileSync(configFilename, 'utf8')) as ServerConfig;
+        const configString = fs.readFileSync(configFilename, 'utf8');
+        this.config = yaml.load(configString) as ServerConfig;
         assert(this.config, "配置文件解析失败");
         console.info("服务启动，当前配置为: ");
         console.info(this.config);
@@ -57,8 +58,9 @@ export default class Server {
     // 处理新请求
     private async handleRequest(ctx: Koa.Context) {
         console.debug("收到新请求");
+        console.debug(ctx.request);
+        console.debug("=========================================");
         ctx.body = this.config.helloMessage;
-        console.debug(this);
         this.lastPostTime = Date.now();
         this.pending = true;
     }
