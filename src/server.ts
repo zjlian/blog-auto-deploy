@@ -3,6 +3,7 @@ import Koa from "koa"
 import bodyParser from "koa-bodyparser";
 import fs from "fs";
 import { strict as assert } from "node:assert";
+import createHandler from "github-webhook-handler";
 
 interface ServerConfig {
     // 启动消息
@@ -35,6 +36,8 @@ export default class Server {
     // 是否有未处理的新提交
     private pending: boolean = false;
 
+    private githubHandler: any;
+
 
     constructor(configFilename: string) {
         assert(configFilename.length > 0, "路径无效");
@@ -44,14 +47,30 @@ export default class Server {
         console.info("服务启动，当前配置为: ");
         console.info(this.config);
         this.server = new Koa;
+        this.githubHandler = createHandler({
+            path: "/",
+            secret: this.config.webhookSecret,
+        });
     }
 
     // 启动服务
     public run(): void {
         this.server.use(async ctx => await this.handleRequest(ctx));
         // 定时处理发布请求，避免短时间多次更新导致不停运行发布流程
+
         setInterval(async () => await this.handleDeploy(),
             this.config.deployInterval);
+
+        this.githubHandler.on("error", async (err: any) => {
+            console.error("Webhook Error: ", err.message);
+        });
+
+        this.githubHandler.on("push", async (event: any) => {
+            console.log('Received a push event for %s to %s',
+                event.payload.repository.name,
+                event.payload.ref)
+        })
+
         console.info(`服务启动端口为 ${this.config.port}`);
         this.server.listen(this.config.port);
     }
@@ -60,7 +79,9 @@ export default class Server {
     private async handleRequest(ctx: Koa.Context) {
         console.debug("收到新请求");
         console.debug(ctx.request);
-        console.debug(ctx.request.body);
+        this.githubHandler(ctx.req, ctx.res, (err: any) => {
+            ctx.res.statusCode = 404;
+        });
         console.debug("=========================================");
         ctx.body = this.config.helloMessage;
         this.lastPostTime = Date.now();
