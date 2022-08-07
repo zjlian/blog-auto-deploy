@@ -1,5 +1,6 @@
 import yaml from "js-yaml"
 import Koa from "koa"
+import bodyParser from "koa-bodyparser";
 import fs from "fs";
 import { strict as assert } from "node:assert";
 
@@ -59,6 +60,7 @@ export default class Server {
     private async handleRequest(ctx: Koa.Context) {
         console.debug("收到新请求");
         console.debug(ctx.request);
+        console.debug(ctx.request.body);
         console.debug("=========================================");
         ctx.body = this.config.helloMessage;
         this.lastPostTime = Date.now();
